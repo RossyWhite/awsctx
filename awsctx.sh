@@ -13,7 +13,8 @@ _export_profile() {
 }
 
 _set_profile() {
-  export_profile "${1}"
+  _export_profile "${1}"
+  echo Switched to profile \""${1}"\"
 #  save_profile
 }
 
@@ -21,14 +22,30 @@ _get_profiles() {
   cat "${AWS_SHARED_CREDENTIALS_FILE}" | awk -F"[][]" 'NF>2 {print $2}'
 }
 
+_list_profiles() {
+  local cur prof_list=()
+  cur="${AWS_PROFILE-default}"
+  prof_list=($(_get_profiles))
+
+  for p in "${prof_list[@]}"; do
+    if [[ "${p}" == "${cur}" ]]; then
+      echo "${p}current" # todo
+    else
+      echo "${p}"
+    fi
+  done
+}
+
 _choose_profile_interactive() {
   local choice
-  choice="$(_get_profiles | fzf --ansi --no-preview)"
-  _export_profile "${choice}"
+  choice="$(_list_profiles > /dev/null 2>&1| fzf --ansi)"
+  _set_profile "${choice}"
 }
 
 
 awsctx() {
+  SELF_CMD="$0"
+
   if [[ "$#" -gt 1 ]]; then
     echo "error: too many arguments" >&2
     _usage
@@ -45,12 +62,11 @@ awsctx() {
     if [[ -t 1 &&  -z "${AWSCTX_IGNORE_FZF:-}" && "$(type fzf &>/dev/null; echo $?)" -eq 0 ]]; then
       _choose_profile_interactive
     else
-      _get_profiles
+      _list_profiles
     fi
   else
     _usage
   fi
 }
-
 
 _export_profile "default"
