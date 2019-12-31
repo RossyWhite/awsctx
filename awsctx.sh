@@ -42,7 +42,7 @@ awsctx() {
       _export_profile "${1}"
     fi
   elif [[ "$#" -eq 0 ]]; then
-    if [[ -t 1 &&  -z "${KUBECTX_IGNORE_FZF:-}" && "$(type fzf &>/dev/null; echo $?)" -eq 0 ]]; then
+    if [[ -t 1 &&  -z "${AWSCTX_IGNORE_FZF:-}" && "$(type fzf &>/dev/null; echo $?)" -eq 0 ]]; then
       _choose_profile_interactive
     else
       _get_profiles
