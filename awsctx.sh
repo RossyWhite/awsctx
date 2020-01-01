@@ -19,7 +19,7 @@ _set_profile() {
 }
 
 _get_profiles() {
-  cat "${AWS_SHARED_CREDENTIALS_FILE}" | awk -F"[][]" 'NF>2 {print $2}'
+   sed -n 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE}
 }
 
 _list_profiles() {
@@ -29,7 +29,7 @@ _list_profiles() {
 
   for p in "${prof_list[@]}"; do
     if [[ "${p}" == "${cur}" ]]; then
-      echo "${p}current" # todo
+      echo "${p}" # TODO
     else
       echo "${p}"
     fi
@@ -38,7 +38,8 @@ _list_profiles() {
 
 _choose_profile_interactive() {
   local choice
-  choice="$(_list_profiles > /dev/null 2>&1| fzf --ansi)"
+  choice=`FZF_DEFAULT_COMMAND="sed -ne 's/\[\(.*\)\]/\1/p' \${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/default/gggggggggggggggggggg/g'" \
+    fzf --ansi`
   _set_profile "${choice}"
 }
 
@@ -51,7 +52,7 @@ awsctx() {
     _usage
   elif [[ "$#" -eq 1 ]]; then
     if [[ "${1}" == '-h' || "${1}" == '--help' ]]; then
-      _usage
+      _usag
     elif [[ "${1}" =~ ^-(.*) ]]; then
       echo "error: unrecognized flag \"${1}\"" >&2
       _usage
