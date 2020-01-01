@@ -37,10 +37,15 @@ _list_profiles() {
 }
 
 _choose_profile_interactive() {
-  local choice
-  choice=`FZF_DEFAULT_COMMAND="sed -ne 's/\[\(.*\)\]/\1/p' \${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/default/gggggggggggggggggggg/g'" \
+#  local choice yellow darkbg normal
+#  yellow=$(tput setaf 3 || true)
+#  darkbg=$(tput setab 0 || true)
+#  normal=$(tput sgr0 || true)
+
+  choice=`FZF_DEFAULT_COMMAND="sed -ne 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/^\(${AWS_PROFILE-default}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'" \
     fzf --ansi`
-  _set_profile "${choice}"
+
+   _set_profile "${choice}"
 }
 
 
