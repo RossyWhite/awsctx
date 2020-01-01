@@ -45,7 +45,7 @@ awsctx() {
     _usage
   elif [[ "$#" -eq 1 ]]; then
     if [[ "${1}" == '-h' || "${1}" == '--help' ]]; then
-      _usag
+      _usage
     elif [[ "${1}" =~ ^-(.*) ]]; then
       echo "error: unrecognized flag \"${1}\"" >&2
       _usage
