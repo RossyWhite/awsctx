@@ -1,7 +1,7 @@
 #!/bin/bash
 
 AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
-#AWSCTX="${XDG_CACHE_HOME:-$HOME/.aws}/awsctx"
+AWSCTX="${XDG_CACHE_HOME:-$HOME/.aws}/awsctx"
 
 
 _usage() {
@@ -12,10 +12,14 @@ _export_profile() {
   export AWS_PROFILE="${1}"
 }
 
+_persist_profile() {
+  echo "${1}" > "${AWSCTX}"
+}
+
 _set_profile() {
   _export_profile "${1}"
+  _persist_profile "${1}"
   echo Switched to profile \""${1}"\"
-#  save_profile
 }
 
 _get_profiles() {
@@ -50,8 +54,6 @@ _choose_profile_interactive() {
 
 
 awsctx() {
-  SELF_CMD="$0"
-
   if [[ "$#" -gt 1 ]]; then
     echo "error: too many arguments" >&2
     _usage
@@ -62,7 +64,7 @@ awsctx() {
       echo "error: unrecognized flag \"${1}\"" >&2
       _usage
     else
-      _export_profile "${1}"
+      _set_profile "${1}"
     fi
   elif [[ "$#" -eq 0 ]]; then
     if [[ -t 1 &&  -z "${AWSCTX_IGNORE_FZF:-}" && "$(type fzf &>/dev/null; echo $?)" -eq 0 ]]; then
@@ -75,4 +77,9 @@ awsctx() {
   fi
 }
 
-_export_profile "default"
+if [[ -f "${AWSCTX}" ]]; then
+  cached="$(cat ${AWSCTX})"
+  if [[ -n "${cached}" ]]; then
+    _export_profile "${cached}"
+  fi
+fi
