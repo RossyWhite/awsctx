@@ -3,7 +3,6 @@
 AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
 AWSCTX="${XDG_CACHE_HOME:-$HOME/.aws}/awsctx"
 
-
 _usage() {
   echo "this is usage"
 }
@@ -22,33 +21,20 @@ _set_profile() {
   echo Switched to profile \""${1}"\"
 }
 
-_get_profiles() {
-   sed -n 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE}
+_list_profiles() {
+  local cmd
+  cmd="$(_get_fzf_command)"
+  eval "${cmd}"
 }
 
-_list_profiles() {
-  local cur prof_list=()
-  cur="${AWS_PROFILE-default}"
-  prof_list=($(_get_profiles))
-
-  for p in "${prof_list[@]}"; do
-    if [[ "${p}" == "${cur}" ]]; then
-      echo "${p}" # TODO
-    else
-      echo "${p}"
-    fi
-  done
+_get_fzf_command() {
+    echo "sed -ne 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/^\(${AWS_PROFILE}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'"
 }
 
 _choose_profile_interactive() {
-#  local choice yellow darkbg normal
-#  yellow=$(tput setaf 3 || true)
-#  darkbg=$(tput setab 0 || true)
-#  normal=$(tput sgr0 || true)
-
-  choice=`FZF_DEFAULT_COMMAND="sed -ne 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/^\(${AWS_PROFILE-default}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'" \
-    fzf --ansi`
-
+  local choice
+  fzf_command="$(_get_fzf_command)"
+  choice=`FZF_DEFAULT_COMMAND="${fzf_command}" fzf --ansi`
    _set_profile "${choice}"
 }
 
