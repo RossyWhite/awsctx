@@ -4,7 +4,14 @@ AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentia
 AWSCTX="${XDG_CACHE_HOME:-$HOME/.aws}/awsctx"
 
 _usage() {
-  echo "this is usage"
+  cat <<"EOF"
+USAGE:
+  awsctx                       : list the profiles
+  awsctx <NAME>                : switch to profile <NAME>
+  awsctx -                     : switch to the previous profile
+
+  awsctx -h,--help             : show this message
+EOF
 }
 
 _export_profile() {
