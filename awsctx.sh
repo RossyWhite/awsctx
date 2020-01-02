@@ -40,19 +40,19 @@ _awsctx_set_profile() {
 
 _awsctx_list_profiles() {
   local cmd
-  cmd="$(_get_fzf_command)"
+  cmd="$(_awsctx_get_fzf_command)"
   eval "${cmd}"
 }
 
-_get_fzf_command() {
+_awsctx_get_fzf_command() {
   local creds_file
   creds_file="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
   echo "sed -ne 's/\[\(.*\)\]/\1/p' ${creds_file} | sed -e 's/^\(${AWS_PROFILE}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'"
 }
 
-_choose_profile_interactive() {
+_awsctx_choose_profile_interactive() {
   local choice fzf_command
-  fzf_command="$(_get_fzf_command)"
+  fzf_command="$(_awsctx_get_fzf_command)"
   choice=`FZF_DEFAULT_COMMAND="${fzf_command}" fzf --ansi`
    if [[ -n "${choice}" ]]; then
     _awsctx_set_profile "${choice}"
@@ -75,7 +75,7 @@ awsctx() {
     fi
   elif [[ "$#" -eq 0 ]]; then
     if [[ -t 1 &&  -z "${AWSCTX_IGNORE_FZF:-}" && "$(type fzf &>/dev/null; echo $?)" -eq 0 ]]; then
-      _choose_profile_interactive
+      _awsctx_choose_profile_interactive
     else
       _awsctx_list_profiles
     fi
