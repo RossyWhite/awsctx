@@ -1,6 +1,5 @@
 #!/bin/bash
 
-AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
 AWSCTX="${XDG_CACHE_HOME:-$HOME/.aws}/awsctx"
 
 _usage() {
@@ -8,7 +7,6 @@ _usage() {
 USAGE:
   awsctx                       : list the profiles
   awsctx <NAME>                : switch to profile <NAME>
-  awsctx -                     : switch to the previous profile
 
   awsctx -h,--help             : show this message
 EOF
@@ -23,9 +21,11 @@ _persist_profile() {
 }
 
 _set_profile() {
-  _export_profile "${1}"
-  _persist_profile "${1}"
-  echo Switched to profile \""${1}"\"
+  if [[ -n "$1" ]]; then
+    _export_profile "${1}"
+    _persist_profile "${1}"
+    echo Switched to profile \""${1}"\"
+  fi
 }
 
 _list_profiles() {
@@ -35,14 +35,18 @@ _list_profiles() {
 }
 
 _get_fzf_command() {
-    echo "sed -ne 's/\[\(.*\)\]/\1/p' ${AWS_SHARED_CREDENTIALS_FILE} | sed -e 's/^\(${AWS_PROFILE}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'"
+  local creds_file
+  creds_file="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
+  echo "sed -ne 's/\[\(.*\)\]/\1/p' ${creds_file} | sed -e 's/^\(${AWS_PROFILE}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'"
 }
 
 _choose_profile_interactive() {
   local choice
   fzf_command="$(_get_fzf_command)"
   choice=`FZF_DEFAULT_COMMAND="${fzf_command}" fzf --ansi`
-   _set_profile "${choice}"
+   if [[ -n "${choice}" ]]; then
+    _set_profile "${choice}"
+   fi
 }
 
 
