@@ -2,6 +2,8 @@
 
 A tool for switching `AWS_PROFILE`
 
+![demo](https://github.com/RossyWhite/awsctx/blob/master/img/awsctx-demo.gif)
+
 ## Installation
 
 Put [awsctx.sh](https://github.com/RossyWhite/awsctx/blob/master/awsctx.sh) in some dir, then
