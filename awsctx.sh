@@ -61,6 +61,8 @@ _awsctx_choose_profile_interactive() {
 
 
 awsctx() {
+  #To sync aws cliV2 profiles in cli V1 format: for Terraform
+     yawsso > /dev/null 2>&1 
   if [[ "$#" -gt 1 ]]; then
     echo "error: too many arguments" >&2
     _awsctx_usage
