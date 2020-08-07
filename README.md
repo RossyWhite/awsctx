@@ -1,6 +1,6 @@
 # awsctx
 
-A tool for switching `AWS_PROFILE`
+A tool for switching `AWS_PROFILE` (powered by `fzf`)
 
 ![demo](https://github.com/RossyWhite/awsctx/blob/master/img/awsctx-demo.gif)
 
