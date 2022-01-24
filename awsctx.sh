@@ -17,7 +17,7 @@ _awsctx_export_profile() {
 }
 
 _awsctx_persist_profile() {
-  echo "${1}" > "${AWSCTX}"
+  echo "${1}" >| "${AWSCTX}"
 }
 
 _awsctx_restore_profile() {
@@ -45,9 +45,7 @@ _awsctx_list_profiles() {
 }
 
 _awsctx_get_fzf_command() {
-  local creds_file
-  creds_file="${AWS_SHARED_CREDENTIALS_FILE:-$HOME/.aws/credentials}"
-  echo "sed -ne 's/\[\(.*\)\]/\1/p' ${creds_file} | sed -e 's/^\(${AWS_PROFILE}\)$/$(tput setab 0)$(tput setaf 3)\1$(tput sgr0)/g'"
+  echo "aws configure list-profiles"
 }
 
 _awsctx_choose_profile_interactive() {
